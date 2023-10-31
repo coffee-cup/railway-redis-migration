@@ -47,30 +47,30 @@ printf "${_RESET}\n"
 
 section "Validating environment variables"
 
-# Validate that PLUGIN_REDIS_URL environment variable exists
-if [ -z "$PLUGIN_REDIS_URL" ]; then
-    error_exit "PLUGIN_REDIS_URL environment variable is not set."
+# Validate that PLUGIN_URL environment variable exists
+if [ -z "$PLUGIN_URL" ]; then
+    error_exit "PLUGIN_URL environment variable is not set."
 fi
 
-# Validate that PLUGIN_REDIS_URL contains the string "containers"
-if [[ "$PLUGIN_REDIS_URL" != *"containers-us-west"* ]]; then
-    error_exit "PLUGIN_REDIS_URL is not a Railway plugin database URL as it does not container the string 'containers-us-west'"
+# Validate that PLUGIN_URL contains the string "containers"
+if [[ "$PLUGIN_URL" != *"containers-us-west"* ]]; then
+    error_exit "PLUGIN_URL is not a Railway plugin database URL as it does not container the string 'containers-us-west'"
 fi
 
-write_ok "PLUGIN_REDIS_URL correctly set"
+write_ok "PLUGIN_URL correctly set"
 
-# Validate that NEW_REDIS_URL environment variable exists
-if [ -z "$NEW_REDIS_URL" ]; then
-    error_exit "NEW_REDIS_URL environment variable is not set."
+# Validate that NEW_URL environment variable exists
+if [ -z "$NEW_URL" ]; then
+    error_exit "NEW_URL environment variable is not set."
 fi
 
-write_ok "NEW_REDIS_URL correctly set"
+write_ok "NEW_URL correctly set"
 
-section "Checking if NEW_REDIS_URL is empty"
+section "Checking if NEW_URL is empty"
 
 # Query to check if there are any tables in the new database
 query="SELECT count(*) FROM information_schema.tables WHERE table_schema NOT IN ('information_schema', 'pg_catalog');"
-output=$(echo 'DBSIZE' | redis-cli -u $NEW_REDIS_URL 2>/dev/null)
+output=$(echo 'DBSIZE' | redis-cli -u $NEW_URL 2>/dev/null)
 
 echo "Output: $output"
 
@@ -85,11 +85,11 @@ else
   write_warn "The new database is not empty. Found OVERWRITE_DATABASE environment variable. Proceeding with restore."
 fi
 
-section "Dumping database from PLUGIN_REDIS_URL" 
+section "Dumping database from PLUGIN_URL" 
 
 # Run pg_dump on the plugin database
 dump_file="redis_dump.rdb"
-redis-cli -u $PLUGIN_REDIS_URL --rdb "$dump_file" || error_exit "Failed to dump database from $PLUGIN_REDIS_URL."
+redis-cli -u $PLUGIN_URL --rdb "$dump_file" || error_exit "Failed to dump database from $PLUGIN_URL."
 
 write_ok "Successfully saved dump to $dump_file"
 
@@ -101,12 +101,12 @@ rdb -c protocol $dump_file > $protocol_file
 
 write_ok "Converted rdb to protocol file"
 
-section "Restoring database to NEW_REDIS_URL"
+section "Restoring database to NEW_URL"
 
 # Restore that data to the new database
-redis-cli -u $NEW_REDIS_URL --pipe < $protocol_file
+redis-cli -u $NEW_URL --pipe < $protocol_file
 
-write_ok "Successfully restored database to NEW_REDIS_URL"
+write_ok "Successfully restored database to NEW_URL"
 
 printf "${_RESET}\n"
 printf "${_RESET}\n"
