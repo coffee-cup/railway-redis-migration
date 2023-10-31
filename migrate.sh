@@ -53,11 +53,11 @@ if [ -z "$PLUGIN_URL" ]; then
 fi
 
 # Validate that PLUGIN_URL contains the string "containers"
-if [[ "$PLUGIN_URL" != *"containers-us-west"* ]]; then
-    error_exit "PLUGIN_URL is not a Railway plugin database URL as it does not container the string 'containers-us-west'"
-fi
+# if [[ "$PLUGIN_URL" != *"containers-us-west"* ]]; then
+#     error_exit "PLUGIN_URL is not a Railway plugin database URL as it does not container the string 'containers-us-west'"
+# fi
 
-write_ok "PLUGIN_URL correctly set"
+# write_ok "PLUGIN_URL correctly set"
 
 # Validate that NEW_URL environment variable exists
 if [ -z "$NEW_URL" ]; then
